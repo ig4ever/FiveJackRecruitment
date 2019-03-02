@@ -1,22 +1,26 @@
+var maxNumber = 5000;
+
 var number = 0;
+var elementNumber = 0;
 var result = [];
 var selfNumberTotal = 0;
 
-for(number = 0; number <= 5000; number++){
+for(number = 0; number <= maxNumber; number++){
     result[number] = calculateGeneratorNumber(number);
 }
 
 result.sort(function(a, b){return a - b});
 
-for(number = 0; number <= 5000; number++){
-    if(number > 0
-    && (result[number] - result[number-1]) > 1 
-    && (result[number] - result[number-1]) != 0
-    && (result[number] - 1) <= 5000){
-        console.log("Self Number : " + (result[number] - 1));
-        selfNumberTotal += (result[number] - 1);
+result.forEach(element => {
+    if(elementNumber > 0
+    && (result[elementNumber] - result[elementNumber-1]) > 1 
+    && (result[elementNumber] - result[elementNumber-1]) != 0
+    && (result[elementNumber] - 1) <= maxNumber){
+        console.log("Self Number : " + (result[elementNumber] - 1));
+        selfNumberTotal += (result[elementNumber] - 1);
     }
-}
+    elementNumber++;
+});
 
 // Fetch generator number & Sum all generator number equal d(n)
 function calculateGeneratorNumber(number){
@@ -24,15 +28,29 @@ function calculateGeneratorNumber(number){
     var generator = [];
     var result = 0;
 
-    for(var i = 0; i < lengthNumber; i++){
-        if(i == 0){
-            generator[i] = number;
-            generator[i + 1] = parseInt(number.toString().split("")[i]);
-            result += generator[i] + generator[i + 1];
-        }
-        else{
-            generator[i + 1] = parseInt(number.toString().split("")[i]);
-            result += generator[i + 1];
+    if(lengthNumber > 0){
+        if(lengthNumber == 1){
+            generator[0] = number;
+            generator[1] = parseInt(number.toString().split("")[0]);
+            result += generator[0] + generator[1];   
+        }else if(lengthNumber == 2){
+            generator[0] = number;
+            generator[1] = parseInt(number.toString().split("")[0]);
+            generator[2] = parseInt(number.toString().split("")[1]);
+            result += generator[0] + generator[1]+ generator[2]; 
+        }else if(lengthNumber == 3){
+            generator[0] = number;
+            generator[1] = parseInt(number.toString().split("")[0]);
+            generator[2] = parseInt(number.toString().split("")[1]);
+            generator[3] = parseInt(number.toString().split("")[2]);
+            result += generator[0] + generator[1] + generator[2] + generator[3]; 
+        }else if(lengthNumber == 4){
+            generator[0] = number;
+            generator[1] = parseInt(number.toString().split("")[0]);
+            generator[2] = parseInt(number.toString().split("")[1]);
+            generator[3] = parseInt(number.toString().split("")[2]);
+            generator[4] = parseInt(number.toString().split("")[3]);
+            result += generator[0] + generator[1] + generator[2] + generator[3]+ generator[4]; 
         }
     }
 
