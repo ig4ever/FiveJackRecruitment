@@ -19,6 +19,7 @@ var counterStepTop = 0;
 var counterStepDown = 0;
 
 var totalCombination = 0;
+var totalCombinationNext = 0;
 var totalPOV = 0;
 var totalPath = 0;
 var maxPath = Number.MIN_VALUE;
@@ -26,9 +27,10 @@ var maxPath = Number.MIN_VALUE;
 var roomPOVTotal = [];
 var roomPathTotal = [];
 
+var hasCacheTemp = false;
+
 var hasCache = false;
-var hasCacheTempHorizontal = false;
-var hasCacheTempVertical = false;
+var hasCacheNext = false;
 
 map[0] = " □ ■ □ ■ □ ■ □ ■ ";
 map[1] = " □ □ □ □ □ ■ □ □ ";
@@ -239,16 +241,11 @@ for(var x = 0; x < nRow; x++){
                 if(room[x+i][y] == "■"){
                     break;
                 }else if(room[x+i][y] == "□"){
-                    if(x == 0 && y == 4){
-                        console.log("ss");
-                    }
-
                     hasCacheTemp = false;
                     hasCacheTemp = checkingPathHorizontal(x + i, y);
 
                     if(hasCacheTemp){
                         totalCombination++;
-                        // break;
                     }           
                 }    
             }
@@ -281,10 +278,15 @@ for(var x = 0; x < nRow; x++){
                     break;
                 }else if(room[x][y+j] == "□"){
                     hasCacheTemp = false;
-                    hasCacheTemp = checkingPathVertical(x, y + j);
+                    room[x][y+j] = "♂";
+                    room[x][y] = "□";
+                    hasCacheTemp = checkingPathVerticalNext(x, y + j);
+
+                    room[x][y+j] = "□";
+                    room[x][y] = "♂";
 
                     if(hasCacheTemp){
-                        totalCombination++;
+                        totalCombinationNext++;
                     }
                 }
             }
@@ -295,11 +297,16 @@ for(var x = 0; x < nRow; x++){
                     break;
                 }else if(room[x][y-j] == "□"){
                     hasCacheTemp = false;
-                    hasCacheTemp = checkingPathVertical(x, y - j);
+                    room[x][y-j] = "♂";
+                    room[x][y] = "□";
+                    hasCacheTemp = checkingPathVerticalNext(x, y - j);
+
+                    room[x][y-j] = "□";
+                    room[x][y] = "♂";
 
                     if(hasCacheTemp){
-                        totalCombination++;
-                    }
+                        totalCombinationNext++;
+                    } 
                 }
             }
         
@@ -308,17 +315,17 @@ for(var x = 0; x < nRow; x++){
                 if(room[x+i][y] == "■"){
                     break;
                 }else if(room[x+i][y] == "□"){
-                    if(x == 0 && y == 4){
-                        console.log("ss");
-                    }
-
                     hasCacheTemp = false;
-                    hasCacheTemp = checkingPathHorizontal(x + i, y);
+                    room[x+i][y] = "♂";
+                    room[x][y] = "□";
+                    hasCacheTemp = checkingPathHorizontalNext(x + i, y);
 
+                    room[x+i][y] = "□";
+                    room[x][y] = "♂";
+                    
                     if(hasCacheTemp){
-                        totalCombination++;
-                        // break;
-                    }           
+                        totalCombinationNext++;
+                    }     
                 }    
             }
         
@@ -328,10 +335,15 @@ for(var x = 0; x < nRow; x++){
                     break;
                 }else if(room[x-i][y] == "□"){
                     hasCacheTemp = false;
-                    hasCacheTemp = checkingPathHorizontal(x - i, y);
+                    room[x-i][y] = "♂";
+                    room[x][y] = "□";
+                    hasCacheTemp = checkingPathHorizontalNext(x - i, y);
+
+                    room[x-i][y] = "□";
+                    room[x][y] = "♂";
 
                     if(hasCacheTemp){
-                        totalCombination++;
+                        totalCombinationNext++;
                     }
                 }
             }
@@ -388,15 +400,23 @@ function checkingPathVertical(x, y){
 }
 
 function checkingPathHorizontalNext(x, y){
-    hasCache = true;
+    hasCacheNext = true;
 
     //Checking to right column
     for(var j = 1; j < nCol - y; j++){
         if(room[x][y+j] == "■"){
             break;
         }else if(room[x][y+j] == "♂"){
-            room[x][y+j] = "■";
-            hasCache = false;
+            room[x][y+j] = "□";
+            room[x][y] = "♂";
+            hasCacheNext = checkingPathVertical(x, y);
+
+            room[x][y+j] = "♂";
+            room[x][y] = "□";
+
+            if(hasCacheNext){
+                break;
+            }
         }
     }
 
@@ -405,26 +425,41 @@ function checkingPathHorizontalNext(x, y){
         if(room[x][y-j] == "■"){
             break;
         }else if(room[x][y-j] == "♂"){
-            room[x][y+j] = "■";
+            room[x][y-j] = "□";
+            room[x][y] = "♂";
 
-            hasCache = false;
+            hasCacheNext = checkingPathVertical(x, y);
+
+            room[x][y-j] = "♂";
+            room[x][y] = "□";
+
+            if(hasCacheNext){
+                break;
+            }
         }
     }
 
-    return hasCache;
+    return hasCacheNext;
 }
 
 function checkingPathVerticalNext(x, y){
-    hasCache = true;
+    hasCacheNext = true;
 
     //Checking to bottom row
     for(var i = 1; i < nRow - x ; i++){
         if(room[x+i][y] == "■"){
             break;
         }else if(room[x+i][y] == "♂"){
-            room[x][y+j] = "■";
+            room[x+i][y] = "□";
+            room[x][y] = "♂";
 
-            hasCache = false;
+            hasCacheNext = checkingPathHorizontal(x,y);
+
+            room[x+i][y] = "♂";
+            room[x][y] = "□";
+            if(hasCacheNext){
+                break;
+            }
         }
     }
 
@@ -433,22 +468,30 @@ function checkingPathVerticalNext(x, y){
         if(room[x-i][y] == "■"){
             break;
         }else if(room[x-i][y] == "♂"){
-            room[x][y] = "■";
+            room[x-i][y] = "□";
+            room[x][y] = "♂";
 
-            hasCache = false;
+            hasCacheNext = checkingPathHorizontal(x,y);
+
+            room[x-i][y] = "♂";
+            room[x][y] = "□";
+
+            if(hasCacheNext){
+                break;
+            }
+            
         }
     }
 
-    return hasCache;
+    return hasCacheNext;
 }
 
-console.log(cacheWallRow);
-console.log(cacheWallColumn);
-console.log(cacheRow);
-console.log(cacheColumn);
-// console.log(room[2][0]);
-// console.log(roomPOVTotal[0][0]);
-// console.log(roomPathTotal[1][0]);
+// console.log(cacheWallRow);
+// console.log(cacheWallColumn);
+// console.log("");
+// console.log(cacheRow);
+// console.log(cacheColumn);
+// console.log(totalCombinationNext);
 console.log("Maximum number of Gunmen : " + counterGunManMax);
 console.log("Total possible ways to place " + counterGunManMax + " Gunman : " + totalCombination);
 
