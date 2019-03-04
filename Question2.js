@@ -26,6 +26,10 @@ var maxPath = Number.MIN_VALUE;
 var roomPOVTotal = [];
 var roomPathTotal = [];
 
+var hasCache = false;
+var hasCacheTempHorizontal = false;
+var hasCacheTempVertical = false;
+
 map[0] = " □ ■ □ ■ □ ■ □ ■ ";
 map[1] = " □ □ □ □ □ ■ □ □ ";
 map[2] = " ■ □ ■ □ □ ■ □ ■ ";
@@ -197,102 +201,258 @@ for(var n = 0; n <= 4; n++){
     }
 }
 
+//Increment a possible ways if a gunmen can be moved horizontally or vertically
+for(var x = 0; x < nRow; x++){
+    for(var y = 0; y < nCol; y++){
+        if(room[x][y] == "♂"){
 
-// for(var x = 0; x <= nRow; x++){
-//     for(var y = 0; y <= nCol; y++){
-//         if(room[x][y] == "♂"){
-//             counterStepRight = 0;
-//             counterStepLeft = 0;
-//             counterStepDown = 0;
-//             counterStepTop = 0;
-//             totalPOV = 0;
-//             totalPath = 0;
+            //Checking to right column
+            for(var j = 1; j < nCol - y; j++){
+                if(room[x][y+j] == "■"){
+                    break;
+                }else if(room[x][y+j] == "□"){
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathVertical(x, y + j);
 
-//             //Checking to right column
-//             for(var j = 1; j < nCol - y; j++){
-//                 if(room[x][y+j] == "■"){
-//                     break;
-//                 }else if(room[x][y+j] == "□"){
-//                     //Checking to top column
-//                     for(var k = 1; k < x + 1; k++){
-//                         if(room[x+k][y+j] == "■"){
-//                             totalCombination++;
-//                             room[x+k][y+j] == "";
-//                             break;
-//                         }else if(room[x+k][y+j] == "♂"){
-//                             room[x+k][y+j]
-//                         }
-//                     }
-//                     counterStepRight++;
-//                 }
-//             }
+                    if(hasCacheTemp){
+                        totalCombination++;
+                    }
+                }
+            }
 
-//             //Checking to left column
-//             for(var j = 1; j < y + 1; j++){
-//                 if(room[x][y-j] == "■"){
-//                     break;
-//                 }else{
-//                     counterStepLeft++;
-//                 }
-//             }
+            //Checking to left column
+            for(var j = 1; j < y + 1; j++){
+                if(room[x][y-j] == "■"){
+                    break;
+                }else if(room[x][y-j] == "□"){
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathVertical(x, y - j);
+
+                    if(hasCacheTemp){
+                        totalCombination++;
+                    }
+                }
+            }
         
-//             //Checking to bottom row
-//             for(var i = 1; i < nRow - x ; i++){
-//                 if(room[x+i][y] == "■"){
-//                     break;
-//                 }else{
-//                     counterStepDown++;
-//                 }    
-//             }
+            //Checking to bottom row
+            for(var i = 1; i < nRow - x ; i++){
+                if(room[x+i][y] == "■"){
+                    break;
+                }else if(room[x+i][y] == "□"){
+                    if(x == 0 && y == 4){
+                        console.log("ss");
+                    }
+
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathHorizontal(x + i, y);
+
+                    if(hasCacheTemp){
+                        totalCombination++;
+                        // break;
+                    }           
+                }    
+            }
         
-//             //Checking to top row
-//             for(var i = 1; i < x + 1 ; i++){
-//                 if(room[x-i][y] == "■"){
-//                     break;
-//                 }else{
-//                     counterStepTop++;
-//                 }
-//             }
+            //Checking to top row
+            for(var i = 1; i < x + 1 ; i++){
+                if(room[x-i][y] == "■"){
+                    break;
+                }else if(room[x-i][y] == "□"){
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathHorizontal(x - i, y);
 
-//             if(counterStepRight > 0){
-//                 totalPOV++;
-//             }
-//             if(counterStepLeft > 0){
-//                 totalPOV++;
-//             }
-//             if(counterStepDown > 0){
-//                 totalPOV++;
-//             }
-//             if(counterStepTop > 0){
-//                 totalPOV++;
-//             }
+                    if(hasCacheTemp){
+                        totalCombination++;
+                    }
+                }
+            }
+        }
+    }
+}
 
-//             totalPath = counterStepRight + counterStepLeft + counterStepTop + counterStepDown;
-//             if(maxPath < totalPath){
-//                 maxPath = totalPath;
-//             }
+//////
+for(var x = 0; x < nRow; x++){
+    for(var y = 0; y < nCol; y++){
+        if(room[x][y] == "♂"){
 
-//             roomPOVTotal[x][y] = totalPOV;
-//             roomPathTotal[x][y] = totalPath;
-//         }
-//     }
-// }
+            //Checking to right column
+            for(var j = 1; j < nCol - y; j++){
+                if(room[x][y+j] == "■"){
+                    break;
+                }else if(room[x][y+j] == "□"){
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathVertical(x, y + j);
 
-// var arr = []
-// while(arr.length < 8){
-//     var r = Math.floor(Math.random()*8);
-//     if(arr.indexOf(r) === -1) arr.push(r);
-// }
+                    if(hasCacheTemp){
+                        totalCombination++;
+                    }
+                }
+            }
+
+            //Checking to left column
+            for(var j = 1; j < y + 1; j++){
+                if(room[x][y-j] == "■"){
+                    break;
+                }else if(room[x][y-j] == "□"){
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathVertical(x, y - j);
+
+                    if(hasCacheTemp){
+                        totalCombination++;
+                    }
+                }
+            }
+        
+            //Checking to bottom row
+            for(var i = 1; i < nRow - x ; i++){
+                if(room[x+i][y] == "■"){
+                    break;
+                }else if(room[x+i][y] == "□"){
+                    if(x == 0 && y == 4){
+                        console.log("ss");
+                    }
+
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathHorizontal(x + i, y);
+
+                    if(hasCacheTemp){
+                        totalCombination++;
+                        // break;
+                    }           
+                }    
+            }
+        
+            //Checking to top row
+            for(var i = 1; i < x + 1 ; i++){
+                if(room[x-i][y] == "■"){
+                    break;
+                }else if(room[x-i][y] == "□"){
+                    hasCacheTemp = false;
+                    hasCacheTemp = checkingPathHorizontal(x - i, y);
+
+                    if(hasCacheTemp){
+                        totalCombination++;
+                    }
+                }
+            }
+        }
+    }
+}
+
+function checkingPathHorizontal(x, y){
+    hasCache = true;
+
+    //Checking to right column
+    for(var j = 1; j < nCol - y; j++){
+        if(room[x][y+j] == "■"){
+            break;
+        }else if(room[x][y+j] == "♂"){
+            hasCache = false;
+        }
+    }
+
+    //Checking to left column
+    for(var j = 1; j < y + 1; j++){
+        if(room[x][y-j] == "■"){
+            break;
+        }else if(room[x][y-j] == "♂"){
+            hasCache = false;
+        }
+    }
+
+    return hasCache;
+}
+
+function checkingPathVertical(x, y){
+    hasCache = true;
+
+    //Checking to bottom row
+    for(var i = 1; i < nRow - x ; i++){
+        if(room[x+i][y] == "■"){
+            break;
+        }else if(room[x+i][y] == "♂"){
+            hasCache = false;
+        }
+    }
+
+    //Checking to top row
+    for(var i = 1; i < x + 1 ; i++){
+        if(room[x-i][y] == "■"){
+            break;
+        }else if(room[x-i][y] == "♂"){
+            hasCache = false;
+        }
+    }
+
+    return hasCache;
+}
+
+function checkingPathHorizontalNext(x, y){
+    hasCache = true;
+
+    //Checking to right column
+    for(var j = 1; j < nCol - y; j++){
+        if(room[x][y+j] == "■"){
+            break;
+        }else if(room[x][y+j] == "♂"){
+            room[x][y+j] = "■";
+            hasCache = false;
+        }
+    }
+
+    //Checking to left column
+    for(var j = 1; j < y + 1; j++){
+        if(room[x][y-j] == "■"){
+            break;
+        }else if(room[x][y-j] == "♂"){
+            room[x][y+j] = "■";
+
+            hasCache = false;
+        }
+    }
+
+    return hasCache;
+}
+
+function checkingPathVerticalNext(x, y){
+    hasCache = true;
+
+    //Checking to bottom row
+    for(var i = 1; i < nRow - x ; i++){
+        if(room[x+i][y] == "■"){
+            break;
+        }else if(room[x+i][y] == "♂"){
+            room[x][y+j] = "■";
+
+            hasCache = false;
+        }
+    }
+
+    //Checking to top row
+    for(var i = 1; i < x + 1 ; i++){
+        if(room[x-i][y] == "■"){
+            break;
+        }else if(room[x-i][y] == "♂"){
+            room[x][y] = "■";
+
+            hasCache = false;
+        }
+    }
+
+    return hasCache;
+}
 
 console.log(cacheWallRow);
 console.log(cacheWallColumn);
-console.log("Maximum number of Gunmen : " + counterGunManMax);
 console.log(cacheRow);
 console.log(cacheColumn);
 // console.log(room[2][0]);
-console.log(roomPOVTotal[0][0]);
-console.log(roomPathTotal[1][0]);
-console.log(room[7][1]);
+// console.log(roomPOVTotal[0][0]);
+// console.log(roomPathTotal[1][0]);
+console.log("Maximum number of Gunmen : " + counterGunManMax);
+console.log("Total possible ways to place " + counterGunManMax + " Gunman : " + totalCombination);
+
+
 
 
 
